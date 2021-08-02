@@ -1,0 +1,16 @@
+.idea
+.venv
+.git
+.datasets
+.ipynb_checkpoints
+*.pyc
+.vscode
+.gitignore
+.env
+graphs
+configs
+checkpoints
+logs
+scripts
+notebooks
+start-experiments.sh
