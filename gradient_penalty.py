@@ -10,18 +10,33 @@ class GradientPenalty:
         self.context = context
         self.discriminator = discriminator
 
+        self.coefficient = 100.0  # Lambda
+        self.center = 0.0
+        # self.coefficient = 10.0
+        # self.center = 1.0
+
+    def interpolate_images(self, real_images: Tensor, fake_images: Tensor):
+        alpha = self.context.to_device(torch.rand(real_images.shape[0], 1, 1, 1))
+        images = real_images + (1 - alpha) * fake_images
+        images.requires_grad_(True)
+
+        return images
+
+    def mix_images(self, real_images: Tensor, fake_images: Tensor):
+        half_batch_size = real_images.shape[0] // 2
+        images = torch.cat((real_images[:half_batch_size], fake_images[:half_batch_size]))
+        images.requires_grad_(True)
+
+        return images
+
     def __call__(self, real_images: Tensor, fake_images: Tensor):
-        batch_size = real_images.shape[0]
-
-        alpha = self.context.to_device(torch.rand(batch_size, 1, 1, 1))
-        interpolated_images = real_images + (1 - alpha) * fake_images
-        interpolated_images.requires_grad_(True)
-
-        scores = self.discriminator(interpolated_images)
+        # images = self.interpolate_images(real_images, fake_images)
+        images = self.mix_images(real_images, fake_images)
+        scores = self.discriminator(images)
 
         ones = self.context.to_device(torch.ones_like(scores))
-        gradients = autograd.grad(outputs=scores, inputs=interpolated_images, grad_outputs=ones, create_graph=True)[0]
-        penalties = (gradients.norm(2, dim=1) - 1.0) ** 2
-        gradient_penalty = 10.0 * penalties.mean()
+        gradients = autograd.grad(outputs=scores, inputs=images, grad_outputs=ones, create_graph=True)[0]
+        penalties = (gradients.norm(2, dim=1) - self.center) ** 2
+        gradient_penalty = self.coefficient * penalties.mean()
 
         return gradient_penalty
