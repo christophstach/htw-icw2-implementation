@@ -1,4 +1,4 @@
-name: "ICW2 - 128x128 | SpectralNorm, Depth: 64"
+name: "ICW2 - 64x64 | EMA, BatchNorm, Depth: 64"
 entrypoint: gan:GANTrail
 
 # records_per_epoch: 30000 # for celebAHQ
@@ -30,11 +30,11 @@ hyperparameters:
   global_batch_size: 32
 
   dataset: celeba-hq
-  image_size: 128
+  image_size: 64
   image_channels: 3
   latent_dimension: 128
-  ema: false
-  spectral_norm: true
+  ema: true
+  spectral_norm: false
 
   g_depth: 64
   d_depth: 64

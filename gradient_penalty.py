@@ -10,10 +10,10 @@ class GradientPenalty:
         self.context = context
         self.discriminator = discriminator
 
-        self.coefficient = 100.0  # Lambda
-        self.center = 0.0
-        # self.coefficient = 10.0
-        # self.center = 1.0
+        # self.coefficient = 100.0  # Lambda
+        # self.center = 0.0
+        self.coefficient = 10.0
+        self.center = 1.0
 
     def interpolate_images(self, real_images: Tensor, fake_images: Tensor):
         alpha = self.context.to_device(torch.rand(real_images.shape[0], 1, 1, 1))
@@ -30,8 +30,8 @@ class GradientPenalty:
         return images
 
     def __call__(self, real_images: Tensor, fake_images: Tensor):
-        # images = self.interpolate_images(real_images, fake_images)
-        images = self.mix_images(real_images, fake_images)
+        images = self.interpolate_images(real_images, fake_images)
+        # images = self.mix_images(real_images, fake_images)
         scores = self.discriminator(images)
 
         ones = self.context.to_device(torch.ones_like(scores))

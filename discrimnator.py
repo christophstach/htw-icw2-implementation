@@ -15,13 +15,6 @@ class Discriminator(nn.Module):
                 nn.BatchNorm2d(out_channels)
             )
 
-        def block_ln(in_channels, out_channels, size):
-            return nn.Sequential(
-                nn.Conv2d(in_channels, out_channels, (4, 4), (2, 2), (1, 1), bias=False),
-                nn.LeakyReLU(0.2),
-                nn.LayerNorm([out_channels, size, size])
-            )
-
         def block_sn(in_channels, out_channels):
             return nn.Sequential(
                 sn(nn.Conv2d(in_channels, out_channels, (4, 4), (2, 2), (1, 1), bias=False)),

@@ -9,7 +9,7 @@ searcher:
   metric: val_classifier_score
   smaller_is_better: false
   max_length:
-    batches: 1000000
+    batches: 2000000
 
 min_validation_period:
   batches: 5000
