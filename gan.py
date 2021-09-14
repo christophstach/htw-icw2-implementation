@@ -28,12 +28,13 @@ class GANTrail(PyTorchTrial):
         self.dataset = self.context.get_hparam('dataset')
         self.image_size = self.context.get_hparam('image_size')
         self.image_channels = self.context.get_hparam('image_channels')
-        self.latent_dimension = self.context.get_hparam('latent_dimension')
-        self.spectral_norm = self.context.get_hparam('spectral_norm')
+        self.latent_dim = self.context.get_hparam('latent_dim')
         self.ema = self.context.get_hparam('ema')
 
         self.g_depth = self.context.get_hparam('g_depth')
         self.d_depth = self.context.get_hparam('d_depth')
+
+        self.d_norm = self.context.get_hparam('d_norm')
 
         self.g_lr = self.context.get_hparam('g_lr')
         self.g_b1 = self.context.get_hparam('g_b1')
@@ -43,8 +44,8 @@ class GANTrail(PyTorchTrial):
         self.d_b1 = self.context.get_hparam('d_b1')
         self.d_b2 = self.context.get_hparam('d_b2')
 
-        self.generator = Generator(self.g_depth, self.image_size, self.image_channels, self.latent_dimension)
-        self.discriminator = Discriminator(self.d_depth, self.image_size, self.image_channels, self.spectral_norm)
+        self.generator = Generator(self.g_depth, self.image_size, self.image_channels, self.latent_dim)
+        self.discriminator = Discriminator(self.d_depth, self.image_size, self.image_channels, self.d_norm)
         self.evaluator, resize_to, num_classes = create_evaluator('vggface2')
         self.evaluator.eval()
 
@@ -66,7 +67,7 @@ class GANTrail(PyTorchTrial):
         self.loss = WGAN()
         self.gradient_penalty = GradientPenalty(self.context, self.discriminator)
 
-        self.fixed_z = torch.randn(self.num_log_images, self.latent_dimension, 1, 1)
+        self.fixed_z = torch.randn(self.num_log_images, self.latent_dim, 1, 1)
 
         self.classifier_score = ClassifierScore(
             classifier=self.evaluator,
@@ -79,7 +80,7 @@ class GANTrail(PyTorchTrial):
 
         # optimize discriminator
         self.discriminator.zero_grad()
-        z = torch.randn(batch_size, self.latent_dimension, 1, 1)
+        z = torch.randn(batch_size, self.latent_dim, 1, 1)
         z = self.context.to_device(z)
 
         with torch.no_grad():
@@ -97,7 +98,7 @@ class GANTrail(PyTorchTrial):
 
         # optimize generator
         self.generator.zero_grad()
-        z = torch.randn(batch_size, self.latent_dimension, 1, 1)
+        z = torch.randn(batch_size, self.latent_dim, 1, 1)
         z = self.context.to_device(z)
 
         fake_images = self.generator(z)
@@ -110,7 +111,7 @@ class GANTrail(PyTorchTrial):
             self.generator.update()
 
         self.generator.eval()
-        z = torch.randn(batch_size, self.latent_dimension, 1, 1)
+        z = torch.randn(batch_size, self.latent_dim, 1, 1)
         z = self.context.to_device(z)
         fake_images = self.generator(z)
         classifier_score = self.classifier_score(fake_images)
@@ -132,7 +133,7 @@ class GANTrail(PyTorchTrial):
         self.generator.eval()
         self.discriminator.eval()
 
-        z = torch.randn(batch_size, self.latent_dimension, 1, 1)
+        z = torch.randn(batch_size, self.latent_dim, 1, 1)
         z = self.context.to_device(z)
 
         fake_images = self.generator(z)
@@ -145,7 +146,7 @@ class GANTrail(PyTorchTrial):
 
         if batch_idx == 0:
             # log sample images
-            z = torch.randn(self.num_log_images, self.latent_dimension, 1, 1)
+            z = torch.randn(self.num_log_images, self.latent_dim, 1, 1)
             z = self.context.to_device(z)
 
             sample_images = self.generator(z)

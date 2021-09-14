@@ -1,4 +1,4 @@
-name: "ICW2 - 128x128 | BatchNorm, Depth: 64"
+name: "ICW2 - 128x128 | WGAN, EMA, Depth: 32"
 entrypoint: gan:GANTrail
 
 # records_per_epoch: 30000 # for celebAHQ
@@ -9,7 +9,7 @@ searcher:
   metric: val_classifier_score
   smaller_is_better: false
   max_length:
-    batches: 2000000
+    batches: 500000
 
 min_validation_period:
   batches: 5000
@@ -32,12 +32,13 @@ hyperparameters:
   dataset: celeba-hq
   image_size: 128
   image_channels: 3
-  latent_dimension: 128
-  ema: false
-  spectral_norm: false
+  latent_dim: 128
+  ema: true
 
-  g_depth: 64
-  d_depth: 64
+  g_depth: 32
+  d_depth: 32
+
+  d_norm: none
 
   g_lr: 0.0001
   g_b1: 0.5

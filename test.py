@@ -5,7 +5,7 @@ from generator import Generator
 
 z = torch.randn(4, 128, 1, 1)
 
-d = Discriminator(1, 128, 3)
+d = Discriminator(1, 128, 3, 'layer')
 g = Generator(1, 128, 3, 128)
 
 image = g(z)
