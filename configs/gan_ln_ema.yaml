@@ -1,4 +1,4 @@
-name: "ICW2 - 128x128 | WGAN, LayerNorm, Depth: 32"
+name: "ICW2 - 128x128 | WGAN, LayerNorm, Depth: 64"
 entrypoint: gan:GANTrail
 
 # records_per_epoch: 30000 # for celebAHQ
@@ -33,10 +33,10 @@ hyperparameters:
   image_size: 128
   image_channels: 3
   latent_dim: 128
-  ema: false
+  ema: true
 
-  g_depth: 32
-  d_depth: 32
+  g_depth: 64
+  d_depth: 64
 
   d_norm: layer
 

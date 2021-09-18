@@ -1,4 +1,4 @@
-name: "ICW2 - 128x128 | WGAN, EMA, SpectralNorm, Depth: 32"
+name: "ICW2 - 128x128 | WGAN, SpectralNorm, Depth: 64"
 entrypoint: gan:GANTrail
 
 # records_per_epoch: 30000 # for celebAHQ
@@ -35,8 +35,8 @@ hyperparameters:
   latent_dim: 128
   ema: false
 
-  g_depth: 32
-  d_depth: 32
+  g_depth: 64
+  d_depth: 64
 
   d_norm: spectral
 
