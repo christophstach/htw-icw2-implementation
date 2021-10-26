@@ -10,8 +10,9 @@ class Generator(nn.Module):
         def block_bn(in_channels, out_channels, size):
             return nn.Sequential(
                 nn.ConvTranspose2d(in_channels, out_channels, (4, 4), (2, 2), (1, 1), bias=False),
+                nn.BatchNorm2d(out_channels),
                 nn.ReLU(),
-                nn.BatchNorm2d(out_channels)
+                # nn.BatchNorm2d(out_channels)
             )
 
         def weights_init(m):
@@ -29,8 +30,9 @@ class Generator(nn.Module):
         self.blocks = nn.ModuleList()
         self.blocks.append(nn.Sequential(
             nn.ConvTranspose2d(latent_dim, multiplier * g_depth, (4, 4), (1, 1), (0, 0), bias=False),
+            nn.BatchNorm2d(multiplier * g_depth),
             nn.ReLU(),
-            nn.BatchNorm2d(multiplier * g_depth)
+            # nn.BatchNorm2d(multiplier * g_depth)
         ))
 
         for i in reversed(range(int(math.log2(image_size) - 3))):

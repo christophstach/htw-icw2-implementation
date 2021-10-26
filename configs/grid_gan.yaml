@@ -1,13 +1,14 @@
-name: "ICW2 - 128x128 | WGAN, SpectralNorm, Depth: 64"
+name: "ICW2 - 128x128 | Grid, Norm before activation, WGAN, Depth: 64"
 entrypoint: gan:GANTrail
 
 # records_per_epoch: 30000 # for celebAHQ
 # records_per_epoch: 63632 # for anime-face
 
 searcher:
-  name: single
+  name: grid
   metric: val_classifier_score
   smaller_is_better: false
+  max_concurrent_trials: 2
   max_length:
     batches: 500000
 
@@ -18,6 +19,7 @@ min_checkpoint_period:
   batches: 10000
 
 resources:
+  max_slots: 2
   slots_per_trial: 1
   agent_label: dt-cluster
 
@@ -33,12 +35,17 @@ hyperparameters:
   image_size: 128
   image_channels: 3
   latent_dim: 128
-  ema: false
+
+  ema:
+    type: categorical
+    vals: [ false, true ]
 
   g_depth: 64
   d_depth: 64
 
-  d_norm: spectral
+  d_norm:
+    type: categorical
+    vals: [ none, spectral, batch, layer ]
 
   g_lr: 0.0001
   g_b1: 0.5
